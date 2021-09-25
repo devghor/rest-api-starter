@@ -41,51 +41,41 @@ class UserController extends Controller
     {
 
         try {
-            $data = [];
             $validator = Validator::make($request->all(), [
                 'firstName' => 'required',
                 'lastName' => 'required',
-                'role' => 'required',
+                'roleId' => 'required',
                 'email' => "unique:users,email",
                 'password' => 'required',
             ]);
 
             if ($validator->fails()) {
-                $data['errors'] = $validator->errors()->all();
-                throw new \Exception("Validation errors", StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+                throw new \Exception($validator->errors()->first());
             }
 
-            $findUser = User::where('email', $request->email)->first();
-            if ($findUser) {
-                $data['errors'] = ['This email already has existed'];
-                throw new \Exception("", StatusValue::HTTP_UNPROCESSABLE_ENTITY);
-            }
+            $role = Role::find($request['roleId']);
 
-            $role = Role::find($request['role']);
-
-            if(!$role){
-                throw  new \Exception('Role not found',StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            if (!$role) {
+                throw  new \Exception('Role not found');
             }
 
             $userService = new UserService();
 
             $user = new User;
             $user->first_name = $request['firstName'];
-            $user->last_name =  $request['lastName'];
+            $user->last_name = $request['lastName'];
             $user->email = $request['email'];
-            $user->user_name = $userService->generateUserName( $request['firstName'],  $request['lastName']);
-            $user->password = $userService->generatePassword( $request['password']);
+            $user->user_name = $userService->generateUserName($request['firstName'], $request['lastName']);
+            $user->password = $userService->generatePassword($request['password']);
             $user->save();
             $user->attachRole($role);
-
-            if ($user->save()) {
-                $data['message'] = 'Successfully registered.';
-            }
-
-            return response($data, StatusValue::HTTP_OK);
+            return response(['data'=> new UserResource($user)], StatusValue::HTTP_OK);
         } catch (\Exception $e) {
-            $data['message'] = $e->getMessage();
-            return response($data, $e->getCode());
+            if($e instanceof ValidationException){
+                return response(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            } else {
+                return response(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            }
         }
     }
 

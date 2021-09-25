@@ -13,7 +13,7 @@ services:
     volumes:
       - ./:/var/www
     networks:
-      - rest-api-starter-networks
+      - app-network
 
   db:
     image: mysql:5.7
@@ -31,7 +31,7 @@ services:
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
 
     networks:
-      - rest-api-starter-networks
+      - app-network
 
   nginx:
     image: nginx:alpine
@@ -43,10 +43,10 @@ services:
       - ./:/var/www
       - ./docker/nginx:/etc/nginx/conf.d/
     networks:
-      - rest-api-starter-networks
+      - app-network
 
   phpmyadmin:
-    container_name: phpmyadmin
+    container_name: rest-api-starter-phpmyadmin
     image: phpmyadmin/phpmyadmin
     ports:
       - 7000:80
@@ -55,11 +55,11 @@ services:
     environment:
       UPLOAD_LIMIT: 3000000000
     networks:
-      - rest-api-starter-networks
+      - app-network
 
 
 networks:
-  rest-api-starter-networks:
+  app-network:
     driver: bridge
 
 volumes:
