@@ -99,7 +99,44 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        try {
+            $validator = Validator::make($request->all(), [
+                'id'=> 'required',
+                'firstName' => 'required',
+                'lastName' => 'required',
+                'roleId' => 'required',
+                'email' =>  'required|email|unique:users,email,'.$id,
+            ]);
+
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first());
+            }
+
+            $role = Role::find($request['roleId']);
+            if (!$role) {
+                throw  new \Exception('Role is not found');
+            }
+
+            $user = User::find($id);
+            if (!$user) {
+                throw  new \Exception('User is not found');
+            }
+
+            $user->first_name = $request['firstName'];
+            $user->last_name = $request['lastName'];
+            $user->email = $request['email'];
+            $user->save();
+            $user->attachRole($role);
+
+            return response(['data'=> new UserResource($user)], StatusValue::HTTP_OK);
+        } catch (\Exception $e) {
+            if($e instanceof ValidationException){
+                return response(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            } else {
+                return response(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        }
     }
 
     /**
