@@ -11,6 +11,7 @@ use App\Values\StatusValue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use PHPUnit\Exception;
 
@@ -69,12 +70,12 @@ class UserController extends Controller
             $user->password = $userService->generatePassword($request['password']);
             $user->save();
             $user->attachRole($role);
-            return response(['data'=> new UserResource($user)], StatusValue::HTTP_OK);
+            return response()->json(['data' => new UserResource($user)], StatusValue::HTTP_OK);
         } catch (\Exception $e) {
-            if($e instanceof ValidationException){
-                return response(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            if ($e instanceof ValidationException) {
+                return response()->json(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
             } else {
-                return response(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+                return response()->json(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
             }
         }
     }
@@ -87,7 +88,20 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+
+        try {
+            $user = User::find($id);
+            if (!$user) {
+                throw  new \Exception('User is not found');
+            }
+            return response()->json(['data' => new UserResource($user)], StatusValue::HTTP_OK);
+        } catch (\Exception $e) {
+            if ($e instanceof ValidationException) {
+                return response()->json(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            } else {
+                return response()->json(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        }
     }
 
     /**
@@ -102,12 +116,13 @@ class UserController extends Controller
 
         try {
             $validator = Validator::make($request->all(), [
-                'id'=> 'required',
+                'id' => 'required',
                 'firstName' => 'required',
                 'lastName' => 'required',
                 'roleId' => 'required',
-                'email' =>  'required|email|unique:users,email,'.$id,
+                'email' => 'unique:users,email,' . $id . ',id'
             ]);
+
 
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first());
@@ -127,14 +142,14 @@ class UserController extends Controller
             $user->last_name = $request['lastName'];
             $user->email = $request['email'];
             $user->save();
-            $user->attachRole($role);
+            $user->syncRoles([$role->id]);
 
-            return response(['data'=> new UserResource($user)], StatusValue::HTTP_OK);
+            return response()->json(['data' => new UserResource($user)], StatusValue::HTTP_OK);
         } catch (\Exception $e) {
-            if($e instanceof ValidationException){
-                return response(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            if ($e instanceof ValidationException) {
+                return response()->json(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
             } else {
-                return response(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+                return response()->json(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
             }
         }
     }
@@ -147,6 +162,19 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $user = User::find($id);
+            if (!$user) {
+                throw  new \Exception('User is not found');
+            }
+            $user->delete();
+            return response()->json(['data' => true], StatusValue::HTTP_OK);
+        } catch (\Exception $e) {
+            if ($e instanceof ValidationException) {
+                return response()->json(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            } else {
+                return response()->json(['errors' => [$e->getMessage()]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        }
     }
 }
