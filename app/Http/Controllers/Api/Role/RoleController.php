@@ -7,6 +7,7 @@ use App\Http\Resources\Role\RoleResource;
 use App\Models\Role;
 use App\Values\StatusValue;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class RoleController extends Controller
 {
@@ -15,31 +16,37 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $offset = $request->page['offset'] ?? 0;
-        $limit = $request->page['limit'] ?? 10;
-        $data = [
-            'data' => RoleResource::collection(Role::offset($offset)->limit($limit)->get())
-        ];
-        return response($data, StatusValue::HTTP_OK);
+        $offset = $request['offset'] ?? 0;
+        $limit = $request['limit'] ?? 10;
+        $roles = RoleResource::collection(Role::offset($offset)->limit($limit)->get());
+        return response(['data' => $roles], StatusValue::HTTP_OK);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        try {
+
+        } catch (\Exception $e) {
+
+            return response(['error' => [
+                'message' => $e->getMessage(),
+                'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY
+            ]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -50,8 +57,8 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -62,7 +69,7 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

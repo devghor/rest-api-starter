@@ -1,0 +1,243 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "rest-api-starter",
+    "contact": {},
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:8000/api/v1",
+      "variables": {}
+    }
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "/register",
+        "operationId": "/register",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "/login",
+        "operationId": "/login",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "encoding": {},
+              "schema": {
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "superadmin@app.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "S123456"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "/users",
+        "operationId": "/users",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "encoding": {},
+              "schema": {
+                "required": [
+                  "firstName",
+                  "lastName",
+                  "email",
+                  "password",
+                  "roleId"
+                ],
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "example": "Hafijur"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Rahaman"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "test1@app.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "T123456"
+                  },
+                  "roleId": {
+                    "type": "integer",
+                    "format": "int32",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "deprecated": false
+      },
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "/users",
+        "operationId": "Get/users",
+        "parameters": [
+          {
+            "name": "page[offset]",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 0
+            }
+          },
+          {
+            "name": "page[limit]",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/roles": {
+      "get": {
+        "tags": [
+          "Role"
+        ],
+        "summary": "/roles",
+        "operationId": "/roles",
+        "parameters": [
+          {
+            "name": "page[offset]",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 0
+            }
+          },
+          {
+            "name": "page[limit]",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "httpBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "security": [
+    {
+      "httpBearer": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "User"
+    },
+    {
+      "name": "Role"
+    }
+  ]
+}
