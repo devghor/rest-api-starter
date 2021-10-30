@@ -15,3 +15,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('api-docs', function () {
     return view('swagger.index');
 });
+
+Route::get('/swagger-api', function () {
+    return file_get_contents(base_path("resources/views/swagger/api.yml"));
+})->name('swagger-api');
