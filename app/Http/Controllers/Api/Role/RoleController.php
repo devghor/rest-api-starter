@@ -7,6 +7,7 @@ use App\Http\Resources\Role\RoleResource;
 use App\Models\Role;
 use App\Values\StatusValue;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class RoleController extends Controller
@@ -33,13 +34,30 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'displayName' => 'required',
+            ]);
 
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first());
+            }
+
+            $role = new Role();
+            $role->name = $request['name'];
+            $role->display_name = $request['displayName'];
+            $role->save();
+
+            return response([
+                'data'=> new RoleResource($role)
+            ], StatusValue::HTTP_ACCEPTED);
         } catch (\Exception $e) {
-
-            return response(['error' => [
-                'message' => $e->getMessage(),
-                'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY
-            ]], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            return response([
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY
+                ]
+            ], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -63,7 +81,37 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return $request->all();
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'displayName' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                throw new \Exception($validator->errors()->first());
+            }
+
+            $role =  Role::find($id);
+
+            if(!$role){
+                throw new \Exception('No role found');
+            }
+
+            $role->name = $request['name'];
+            $role->display_name = $request['displayName'];
+            $role->save();
+
+            return response([
+                'data'=> new RoleResource($role)
+            ], StatusValue::HTTP_ACCEPTED);
+        } catch (\Exception $e) {
+            return response([
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY
+                ]
+            ], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
 
@@ -75,6 +123,22 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $role =  Role::find($id);
+            if(!$role){
+                throw new \Exception('No role found');
+            }
+            $role->delete();
+            return response([
+                'data'=> []
+            ], StatusValue::HTTP_ACCEPTED);
+        } catch (\Exception $e) {
+            return response([
+                'error' => [
+                    'message' => $e->getMessage(),
+                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY
+                ]
+            ], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 }

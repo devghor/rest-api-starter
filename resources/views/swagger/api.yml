@@ -51,7 +51,7 @@ paths:
       requestBody:
         description: |
           | Field | Description  |
-          | :---| ---:|
+          | :--- | ---:|
           | firstName | This is the firstName |
           | lastName  | User last name |
           | email  | User email address |
