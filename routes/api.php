@@ -7,10 +7,12 @@ use App\Http\Controllers\Api\User\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\Api\Role\RoleController;
 use App\Http\Controllers\Api\Permission\PermissionController;
+use App\Http\Controllers\Api\Dashboard\DashboardController;
 
 Route::prefix('v1')->group(function () {
     Route::post('login', [LoginController::class, 'login']);
     Route::group(['middleware' => ['auth:api', AdminMiddleware::class]], function () {
+        Route::get('dashboard-details', [DashboardController::class, 'index']);
         Route::apiResource('users', UserController::class);
         Route::apiResource('roles', RoleController::class);
         Route::apiResource('permissions', PermissionController::class);
