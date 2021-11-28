@@ -4,7 +4,7 @@
 namespace App\Services\Token;
 
 
-class TokenService
+class TokenService implements TokenServiceInterface
 {
     public function deleteUserAccessToken($user)
     {

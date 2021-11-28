@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Dashboard\DashboardController;
 Route::prefix('v1')->group(function () {
     Route::post('login', [LoginController::class, 'login']);
     Route::group(['middleware' => ['auth:api', AdminMiddleware::class]], function () {
+        Route::post('logout', [LoginController::class, 'logout']);
         Route::get('dashboard-details', [DashboardController::class, 'index']);
         Route::apiResource('users', UserController::class);
         Route::apiResource('roles', RoleController::class);

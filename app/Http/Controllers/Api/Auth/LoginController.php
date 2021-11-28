@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Repositories\User\UserRepository;
 use App\Services\Token\TokenService;
+use App\Services\Token\TokenServiceInterface;
 use App\Services\User\UserService;
 use App\Values\StatusValue;
 use Dotenv\Exception\ValidationException;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -54,20 +56,18 @@ class LoginController extends Controller
             $user = $this->userRepo->findWhere([
                 "email" => $request['email']
             ])->first();
-            if(!$user){
+            if (!$user) {
                 throw new \Exception('This email does not exist.');
             }
             if (Auth::attempt(['email' => $request['email'], 'password' => $request['password']])) {
 
                 $response['token'] = $tokenService->createUserAccessToken($user);
                 $response['user'] = $userService->getUserInformation($user);
-
             } else {
                 throw new \Exception("Email or password does not match");
             }
 
             return response($response, StatusValue::HTTP_OK);
-
         } catch (ValidationException $e) {
             $response['message'] = $e->getMessage();
             return response($response, $e->getCode());
@@ -75,7 +75,17 @@ class LoginController extends Controller
             $response['message'] = $e->getMessage();
             return response($response, StatusValue::HTTP_UNPROCESSABLE_ENTITY);
         }
-
     }
 
+    function logout(Request $request, TokenServiceInterface $tokenService)
+    {
+        try{
+            $authUser = Auth::user();
+            $tokenService->deleteUserAccessToken($authUser);
+            return response([], StatusValue::HTTP_OK);
+        } catch(Exception $e){
+            $response['message'] = $e->getMessage();
+            return response($response, StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
 }
