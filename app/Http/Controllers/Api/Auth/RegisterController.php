@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
 use App\Services\User\UserService;
 use App\Values\StatusValue;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -52,28 +52,26 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-
         try {
             $response = [];
             $validator = Validator::make($request->all(), [
                 'first_name' => 'required',
                 'last_name' => 'required',
                 'role' => 'required',
-                'email' => "unique:users,email",
+                'email' => 'unique:users,email',
                 'password' => 'required',
             ]);
 
             if ($validator->fails()) {
                 $response['errors'] = $validator->errors()->all();
-                throw new \Exception("Validation errors", StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+                throw new \Exception('Validation errors', StatusValue::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             $findUser = User::where('email', $request->email)->first();
             if ($findUser) {
                 $response['errors'] = ['This email already has existed'];
-                throw new \Exception("", StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+                throw new \Exception('', StatusValue::HTTP_UNPROCESSABLE_ENTITY);
             }
-
 
             $userService = new UserService();
 
@@ -92,10 +90,10 @@ class RegisterController extends Controller
             return response($response, StatusValue::HTTP_OK);
         } catch (\Exception $e) {
             $response['message'] = $e->getMessage();
+
             return response($response, $e->getCode());
         }
     }
-
 
     /**
      * Get a validator for an incoming registration request.

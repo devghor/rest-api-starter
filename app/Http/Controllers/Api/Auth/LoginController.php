@@ -18,7 +18,6 @@ class LoginController extends Controller
 {
     private $userRepo;
 
-
     /**
      * Create a new controller instance.
      *
@@ -42,49 +41,52 @@ class LoginController extends Controller
         try {
             $response = [];
             $validator = Validator::make($request->all(), [
-                'email' => "email|required",
+                'email' => 'email|required',
                 'password' => 'required',
             ]);
 
             if ($validator->fails()) {
                 $response['errors'] = $validator->errors()->all();
-                throw new \Exception("Validation errors", StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+                throw new \Exception('Validation errors', StatusValue::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             $userService = new UserService();
             $tokenService = new TokenService();
             $user = $this->userRepo->findWhere([
-                "email" => $request['email']
+                'email' => $request['email'],
             ])->first();
-            if (!$user) {
+            if (! $user) {
                 throw new \Exception('This email does not exist.');
             }
             if (Auth::attempt(['email' => $request['email'], 'password' => $request['password']])) {
-
                 $response['token'] = $tokenService->createUserAccessToken($user);
                 $response['user'] = $userService->getUserInformation($user);
             } else {
-                throw new \Exception("Email or password does not match");
+                throw new \Exception('Email or password does not match');
             }
 
             return response($response, StatusValue::HTTP_OK);
         } catch (ValidationException $e) {
             $response['message'] = $e->getMessage();
+
             return response($response, $e->getCode());
         } catch (\Exception $e) {
             $response['message'] = $e->getMessage();
+
             return response($response, StatusValue::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 
-    function logout(Request $request, TokenServiceInterface $tokenService)
+    public function logout(Request $request, TokenServiceInterface $tokenService)
     {
-        try{
+        try {
             $authUser = Auth::user();
             $tokenService->deleteUserAccessToken($authUser);
+
             return response([], StatusValue::HTTP_OK);
-        } catch(Exception $e){
+        } catch (Exception $e) {
             $response['message'] = $e->getMessage();
+
             return response($response, StatusValue::HTTP_UNPROCESSABLE_ENTITY);
         }
     }

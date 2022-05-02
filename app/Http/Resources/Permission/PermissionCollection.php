@@ -17,6 +17,5 @@ class PermissionCollection extends ResourceCollection
         return $this->collection->map(function ($item) {
             return new PermissionResource($item);
         });
-
     }
 }

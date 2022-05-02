@@ -22,21 +22,21 @@ class DashboardController extends Controller
             $userCount = User::count();
             $roleCount = Role::count();
             $permissionCount = Permission::count();
+
             return response([
                 'data'=>[
                     'totalUser' => $userCount,
                     'totalRole' => $roleCount,
                     'totalPermission' => $permissionCount,
-                ]
+                ],
             ], StatusValue::HTTP_OK);
         } catch (\Exception $e) {
             return response([
                 'error'=>[
                     'message' => $e->getMessage(),
-                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY
-                ]
+                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY,
+                ],
             ], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
-
 }

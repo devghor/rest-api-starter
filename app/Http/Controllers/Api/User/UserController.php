@@ -27,8 +27,9 @@ class UserController extends Controller
         $offset = $request->page['offset'] ?? 0;
         $limit = $request->page['limit'] ?? 10;
         $data = [
-            'data' => UserResource::collection(User::offset($offset)->limit($limit)->get())
+            'data' => UserResource::collection(User::offset($offset)->limit($limit)->get()),
         ];
+
         return response($data, StatusValue::HTTP_OK);
     }
 
@@ -40,13 +41,12 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
         try {
             $validator = Validator::make($request->all(), [
                 'firstName' => 'required',
                 'lastName' => 'required',
                 'roleId' => 'required',
-                'email' => "unique:users,email",
+                'email' => 'unique:users,email',
                 'password' => 'required',
             ]);
 
@@ -56,7 +56,7 @@ class UserController extends Controller
 
             $role = Role::find($request['roleId']);
 
-            if (!$role) {
+            if (! $role) {
                 throw  new \Exception('Role not found');
             }
 
@@ -70,6 +70,7 @@ class UserController extends Controller
             $user->password = $userService->generatePassword($request['password']);
             $user->save();
             $user->attachRole($role);
+
             return response()->json(['data' => new UserResource($user)], StatusValue::HTTP_OK);
         } catch (\Exception $e) {
             if ($e instanceof ValidationException) {
@@ -88,12 +89,12 @@ class UserController extends Controller
      */
     public function show($id)
     {
-
         try {
             $user = User::find($id);
-            if (!$user) {
+            if (! $user) {
                 throw  new \Exception('User is not found');
             }
+
             return response()->json(['data' => new UserResource($user)], StatusValue::HTTP_OK);
         } catch (\Exception $e) {
             if ($e instanceof ValidationException) {
@@ -113,28 +114,26 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-
         try {
             $validator = Validator::make($request->all(), [
                 'id' => 'required',
                 'firstName' => 'required',
                 'lastName' => 'required',
                 'roleId' => 'required',
-                'email' => 'unique:users,email,' . $id . ',id'
+                'email' => 'unique:users,email,'.$id.',id',
             ]);
-
 
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first());
             }
 
             $role = Role::find($request['roleId']);
-            if (!$role) {
+            if (! $role) {
                 throw  new \Exception('Role is not found');
             }
 
             $user = User::find($id);
-            if (!$user) {
+            if (! $user) {
                 throw  new \Exception('User is not found');
             }
 
@@ -164,10 +163,11 @@ class UserController extends Controller
     {
         try {
             $user = User::find($id);
-            if (!$user) {
+            if (! $user) {
                 throw  new \Exception('User is not found');
             }
             $user->delete();
+
             return response()->json(['data' => true], StatusValue::HTTP_OK);
         } catch (\Exception $e) {
             if ($e instanceof ValidationException) {

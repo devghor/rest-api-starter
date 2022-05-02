@@ -16,7 +16,6 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(TokenServiceInterface::class, TokenService::class);
-
     }
 
     /**

@@ -28,7 +28,7 @@ class UsersTableSeeder extends Seeder
                 'user_name' => 'superadmin',
                 'email' => 'superadmin@app.com',
                 'email_verified_at' => Carbon::now()->toDateTimeString(),
-                'password' => $userService->generatePassword("S123456"),
+                'password' => $userService->generatePassword('S123456'),
             ],
             [
                 'id' => 2,
@@ -37,8 +37,8 @@ class UsersTableSeeder extends Seeder
                 'user_name' => 'staffadmin',
                 'email' => 'staffadmin@app.com',
                 'email_verified_at' => Carbon::now()->toDateTimeString(),
-                'password' => $userService->generatePassword("S123456"),
-            ]
+                'password' => $userService->generatePassword('S123456'),
+            ],
         ];
 
         $superAdminUser = User::create($users[0]);
@@ -49,7 +49,5 @@ class UsersTableSeeder extends Seeder
 
         $superAdminUser->attachRole($superAdmin);
         $staffAdminUser->attachRole($staffAdmin);
-
-
     }
 }

@@ -8,7 +8,7 @@ class PermissionRole extends Model
 {
     public $timestamps = false;
 
-    protected $table = "permission_role";
+    protected $table = 'permission_role';
 
     /**
      * The attributes that are mass assignable.
@@ -21,5 +21,4 @@ class PermissionRole extends Model
     {
         return $this->belongsTo(Role::class, 'role_id');
     }
-
 }

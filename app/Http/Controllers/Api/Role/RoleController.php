@@ -22,6 +22,7 @@ class RoleController extends Controller
         $offset = $request['offset'] ?? 0;
         $limit = $request['limit'] ?? 10;
         $roles = RoleResource::collection(Role::offset($offset)->limit($limit)->get());
+
         return response(['data' => $roles], StatusValue::HTTP_OK);
     }
 
@@ -49,14 +50,14 @@ class RoleController extends Controller
             $role->save();
 
             return response([
-                'data'=> new RoleResource($role)
+                'data'=> new RoleResource($role),
             ], StatusValue::HTTP_ACCEPTED);
         } catch (\Exception $e) {
             return response([
                 'error' => [
                     'message' => $e->getMessage(),
-                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY
-                ]
+                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY,
+                ],
             ], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
@@ -91,9 +92,9 @@ class RoleController extends Controller
                 throw new \Exception($validator->errors()->first());
             }
 
-            $role =  Role::find($id);
+            $role = Role::find($id);
 
-            if(!$role){
+            if (! $role) {
                 throw new \Exception('No role found');
             }
 
@@ -102,18 +103,17 @@ class RoleController extends Controller
             $role->save();
 
             return response([
-                'data'=> new RoleResource($role)
+                'data'=> new RoleResource($role),
             ], StatusValue::HTTP_ACCEPTED);
         } catch (\Exception $e) {
             return response([
                 'error' => [
                     'message' => $e->getMessage(),
-                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY
-                ]
+                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY,
+                ],
             ], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
-
 
     /**
      * Remove the specified resource from storage.
@@ -124,20 +124,21 @@ class RoleController extends Controller
     public function destroy($id)
     {
         try {
-            $role =  Role::find($id);
-            if(!$role){
+            $role = Role::find($id);
+            if (! $role) {
                 throw new \Exception('No role found');
             }
             $role->delete();
+
             return response([
-                'data'=> []
+                'data'=> [],
             ], StatusValue::HTTP_ACCEPTED);
         } catch (\Exception $e) {
             return response([
                 'error' => [
                     'message' => $e->getMessage(),
-                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY
-                ]
+                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY,
+                ],
             ], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
         }
     }

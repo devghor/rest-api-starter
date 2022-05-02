@@ -25,6 +25,7 @@ class PermissionController extends Controller
         $offset = $request['offset'] ?? 0;
         $limit = $request['limit'] ?? 10;
         $permissions = new PermissionCollection(Permission::orderBy('id', 'DESC')->offset($offset)->limit($limit)->get());
+
         return response(['data' => $permissions], StatusValue::HTTP_OK);
     }
 
@@ -40,7 +41,7 @@ class PermissionController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
                 'displayName' => 'required',
-                'roleId' => 'required'
+                'roleId' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -49,7 +50,7 @@ class PermissionController extends Controller
 
             $role = Role::find($request['roleId']);
 
-            if (!$role) {
+            if (! $role) {
                 throw  new \Exception('Role not found');
             }
 
@@ -62,14 +63,14 @@ class PermissionController extends Controller
             $role->attachPermission($permission);
 
             return response([
-                'data' => new PermissionResource($permission)
+                'data' => new PermissionResource($permission),
             ], StatusValue::HTTP_ACCEPTED);
         } catch (\Exception $e) {
             return response([
                 'error' => [
                     'message' => $e->getMessage(),
-                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY
-                ]
+                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY,
+                ],
             ], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
@@ -94,12 +95,11 @@ class PermissionController extends Controller
      */
     public function update(Request $request, $id)
     {
-
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
                 'displayName' => 'required',
-                'roleId' => 'required'
+                'roleId' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -108,12 +108,12 @@ class PermissionController extends Controller
 
             $role = Role::find($request['roleId']);
 
-            if (!$role) {
+            if (! $role) {
                 throw new \Exception('No role found');
             }
 
             $permission = Permission::find($id);
-            if (!$permission) {
+            if (! $permission) {
                 throw new \Exception('No permission found');
             }
             $permission->name = $request['name'];
@@ -123,17 +123,17 @@ class PermissionController extends Controller
 
             PermissionRole::where('permission_id', $permission->id)->update([
                 'permission_id' => $permission->id,
-                'role_id' => $role->id]);
+                'role_id' => $role->id, ]);
 
             return response([
-                'data' => new PermissionResource($permission)
+                'data' => new PermissionResource($permission),
             ], StatusValue::HTTP_ACCEPTED);
         } catch (\Exception $e) {
             return response([
                 'error' => [
                     'message' => $e->getMessage(),
-                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY
-                ]
+                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY,
+                ],
             ], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
@@ -148,19 +148,20 @@ class PermissionController extends Controller
     {
         try {
             $permisssoin = Permission::find($id);
-            if (!$permisssoin) {
+            if (! $permisssoin) {
                 throw new \Exception('No permission found');
             }
             $permisssoin->delete();
+
             return response([
-                'data' => []
+                'data' => [],
             ], StatusValue::HTTP_ACCEPTED);
         } catch (\Exception $e) {
             return response([
                 'error' => [
                     'message' => $e->getMessage(),
-                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY
-                ]
+                    'code' => StatusValue::HTTP_UNPROCESSABLE_ENTITY,
+                ],
             ], StatusValue::HTTP_UNPROCESSABLE_ENTITY);
         }
     }

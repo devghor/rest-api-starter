@@ -20,9 +20,10 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next)
     {
         $user = Auth::user();
-        if(!$user->hasRole([RoleValue::SUPER_ADMIN_NAME, RoleValue::STAFF_ADMIN_NAME])){
-            return response('You have no permission' , StatusValue::HTTP_FORBIDDEN);
+        if (! $user->hasRole([RoleValue::SUPER_ADMIN_NAME, RoleValue::STAFF_ADMIN_NAME])) {
+            return response('You have no permission', StatusValue::HTTP_FORBIDDEN);
         }
+
         return $next($request);
     }
 }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services\User;
-
 
 use App\Models\Impersonate;
 use App\Models\User;
@@ -11,7 +9,6 @@ use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
-
     /**
      * Generate username
      * @param $firstName
@@ -23,24 +20,22 @@ class UserService
         $userName = '';
 
         if ($firstName) {
-            $userName .= strtolower(explode(" ", $firstName)[0]);
+            $userName .= strtolower(explode(' ', $firstName)[0]);
         }
 
         if ($lastName) {
-            $userName .= '.' . strtolower(explode(" ", $lastName)[0]);
+            $userName .= '.'.strtolower(explode(' ', $lastName)[0]);
         }
 
         $countUser = User::whereRaw("user_name REGEXP '^{$userName}(\.[0-9]*)?$'")->count();
 
         if (($countUser + 1) > 1) {
             $suffix = $countUser + 1;
-            $userName .= '.' . $suffix;
+            $userName .= '.'.$suffix;
         }
 
         return $userName;
-
     }
-
 
     /**
      * @param $originalPassword
@@ -64,12 +59,12 @@ class UserService
         $data = [];
 
         if ($user) {
-            $data["id"] = $user->id;
-            $data["userName"] = $user->user_name ?? null;
-            $data["firstName"] = $user->first_name;
-            $data["lastName"] = $user->last_name;
-            $data["email"] = $user->email;
-            $data["roles"] = $user->roles->map(function($item){
+            $data['id'] = $user->id;
+            $data['userName'] = $user->user_name ?? null;
+            $data['firstName'] = $user->first_name;
+            $data['lastName'] = $user->last_name;
+            $data['email'] = $user->email;
+            $data['roles'] = $user->roles->map(function ($item) {
                 return $item->name;
             });
         }
@@ -99,7 +94,7 @@ class UserService
         $hasPermission = true;
         $profile = $user->profile;
         if ($profile) {
-            if (!$profile->image || !$profile->profile_name || strlen($profile->about_me) <= 149) {
+            if (! $profile->image || ! $profile->profile_name || strlen($profile->about_me) <= 149) {
                 $hasPermission = false;
             }
         } else {
@@ -114,19 +109,14 @@ class UserService
             $hasPermission = false;
         }
 
-
         if ($user->packages()->count() == 0) {
             $hasPermission = false;
         }
-
 
         if ($user->locations()->count() == 0) {
             $hasPermission = false;
         }
 
-
         return $hasPermission;
     }
-
-
 }
