@@ -16,10 +16,6 @@ Route::get('api-docs', function () {
     return view('swagger.index');
 });
 
-Route::get('/api/v1', function () {
-    return file_get_contents(base_path('resources/views/swagger/api-v1.yml'));
-})->name('api.v1');
-
-Route::get('/api/v2', function () {
-    return file_get_contents(base_path('resources/views/swagger/api-v2.yml'));
-})->name('api.v2');
+Route::get('/swagger-api', function () {
+    return file_get_contents(base_path("resources/views/swagger/api.yml"));
+})->name('swagger-api');

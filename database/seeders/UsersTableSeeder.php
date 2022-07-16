@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\RoleEnum;
+use App\Enums\UserEnum;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\User\UserService;
@@ -26,28 +28,15 @@ class UsersTableSeeder extends Seeder
                 'first_name' => 'Super',
                 'last_name' => 'Admin',
                 'user_name' => 'superadmin',
-                'email' => 'superadmin@app.com',
+                'email' => 'admin@app.com',
                 'email_verified_at' => Carbon::now()->toDateTimeString(),
-                'password' => $userService->generatePassword('S123456'),
+                'password' => $userService->generatePassword("S123456"),
             ],
-            [
-                'id' => 2,
-                'first_name' => 'Staff',
-                'last_name' => 'Admin',
-                'user_name' => 'staffadmin',
-                'email' => 'staffadmin@app.com',
-                'email_verified_at' => Carbon::now()->toDateTimeString(),
-                'password' => $userService->generatePassword('S123456'),
-            ],
+
         ];
 
-        $superAdminUser = User::create($users[0]);
-        $staffAdminUser = User::create($users[1]);
-
-        $superAdmin = Role::find(RoleValue::SUPER_ADMIN_ID);
-        $staffAdmin = Role::find(RoleValue::STAFF_ADMIN_ID);
-
-        $superAdminUser->attachRole($superAdmin);
-        $staffAdminUser->attachRole($staffAdmin);
+        $superAdminUser = User::find(UserEnum::SUPER_ADMIN_USER_ID) ?? User::create($users[0]);
+        $saRole = Role::find(RoleEnum::SUPER_ADMIN_ROLE_ID);
+        $superAdminUser->attachRole($saRole);
     }
 }

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\Enums\StatusCodeEnum;
 use App\Http\Controllers\Controller;
 use App\Repositories\User\UserRepository;
 use App\Services\Token\TokenService;
 use App\Services\Token\TokenServiceInterface;
 use App\Services\User\UserService;
-use App\Values\StatusValue;
 use Dotenv\Exception\ValidationException;
 use Exception;
 use Illuminate\Http\Request;
@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Validator;
 class LoginController extends Controller
 {
     private $userRepo;
+
 
     /**
      * Create a new controller instance.
@@ -41,53 +42,50 @@ class LoginController extends Controller
         try {
             $response = [];
             $validator = Validator::make($request->all(), [
-                'email' => 'email|required',
+                'email' => "email|required",
                 'password' => 'required',
             ]);
 
             if ($validator->fails()) {
                 $response['errors'] = $validator->errors()->all();
-                throw new \Exception('Validation errors', StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+                throw new \Exception("Validation errors", StatusCodeEnum::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             $userService = new UserService();
             $tokenService = new TokenService();
             $user = $this->userRepo->findWhere([
-                'email' => $request['email'],
+                "email" => $request['email']
             ])->first();
-            if (! $user) {
+            if (!$user) {
                 throw new \Exception('This email does not exist.');
             }
             if (Auth::attempt(['email' => $request['email'], 'password' => $request['password']])) {
+
                 $response['token'] = $tokenService->createUserAccessToken($user);
                 $response['user'] = $userService->getUserInformation($user);
             } else {
-                throw new \Exception('Email or password does not match');
+                throw new \Exception("Email or password does not match");
             }
 
-            return response($response, StatusValue::HTTP_OK);
+            return response($response, StatusCodeEnum::HTTP_OK);
         } catch (ValidationException $e) {
             $response['message'] = $e->getMessage();
-
             return response($response, $e->getCode());
         } catch (\Exception $e) {
             $response['message'] = $e->getMessage();
-
-            return response($response, StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            return response($response, StatusCodeEnum::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 
-    public function logout(Request $request, TokenServiceInterface $tokenService)
+    function logout(Request $request, TokenServiceInterface $tokenService)
     {
-        try {
+        try{
             $authUser = Auth::user();
             $tokenService->deleteUserAccessToken($authUser);
-
-            return response([], StatusValue::HTTP_OK);
-        } catch (Exception $e) {
+            return response([], StatusCodeEnum::HTTP_OK);
+        } catch(Exception $e){
             $response['message'] = $e->getMessage();
-
-            return response($response, StatusValue::HTTP_UNPROCESSABLE_ENTITY);
+            return response($response, StatusCodeEnum::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 }

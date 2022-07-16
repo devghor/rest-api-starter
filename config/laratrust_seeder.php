@@ -14,11 +14,8 @@ return [
     'roles_structure' => [
         'superadmin' => [
             'users' => 'c,r,u,d',
-            'profile' => 'c,r,u,d',
-        ],
-        'staffadmin' => [
-            'users' => 'c,r,u',
-            'profile' => 'r,u',
+            'roles' => 'c,r,u,d',
+            'permissions' => 'c,r,u,d',
         ],
     ],
 
@@ -26,6 +23,6 @@ return [
         'c' => 'create',
         'r' => 'read',
         'u' => 'update',
-        'd' => 'delete',
-    ],
+        'd' => 'delete'
+    ]
 ];

@@ -1,13 +1,13 @@
 <?php
 
-use App\Http\Controllers\Api\Auth\LoginController;
-use App\Http\Controllers\Api\Dashboard\DashboardController;
-use App\Http\Controllers\Api\Permission\PermissionController;
-use App\Http\Controllers\Api\Role\RoleController;
-use App\Http\Controllers\Api\User\UserController;
-use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\User\UserController;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\Api\Role\RoleController;
+use App\Http\Controllers\Api\Permission\PermissionController;
+use App\Http\Controllers\Api\Dashboard\DashboardController;
 
 Route::prefix('v1')->group(function () {
     Route::post('login', [LoginController::class, 'login']);
