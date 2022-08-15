@@ -1,15 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Api\Role;
+namespace App\Http\Controllers\Acl\Permission;
 
 use App\Enums\StatusCodeEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Role\RoleResource;
-use App\Models\Role;
+use App\Http\Resources\Permission\PermissionCollection;
+use App\Http\Resources\Permission\PermissionResource;
+use App\Models\Acl\Permission;
+use App\Models\Acl\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class RoleController extends Controller
+class PermissionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,8 +23,8 @@ class RoleController extends Controller
     {
         $offset = $request['offset'] ?? 0;
         $limit = $request['limit'] ?? 10;
-        $roles = RoleResource::collection(Role::offset($offset)->limit($limit)->get());
-        return response(['data' => $roles], StatusCodeEnum::HTTP_OK);
+        $permissions = new PermissionCollection(Permission::orderBy('id', 'DESC')->offset($offset)->limit($limit)->get());
+        return response(['data' => $permissions], StatusCodeEnum::HTTP_OK);
     }
 
     /**
@@ -36,19 +39,29 @@ class RoleController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
                 'displayName' => 'required',
+                'roleId' => 'required'
             ]);
 
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first());
             }
 
-            $role = new Role();
-            $role->name = $request['name'];
-            $role->display_name = $request['displayName'];
-            $role->save();
+            $role = Role::find($request['roleId']);
+
+            if (!$role) {
+                throw  new \Exception('Role not found');
+            }
+
+            $permission = new Permission();
+            $permission->name = $request['name'];
+            $permission->display_name = $request['displayName'];
+            $permission->description = $request['description'];
+            $permission->save();
+
+            $role->attachPermission($permission);
 
             return response([
-                'data' => new RoleResource($role)
+                'data' => new PermissionResource($permission)
             ], StatusCodeEnum::HTTP_ACCEPTED);
         } catch (\Exception $e) {
             return response([
@@ -80,28 +93,39 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
+
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
                 'displayName' => 'required',
+                'roleId' => 'required'
             ]);
 
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first());
             }
 
-            $role =  Role::find($id);
+            $role = Role::find($request['roleId']);
 
             if (!$role) {
                 throw new \Exception('No role found');
             }
 
-            $role->name = $request['name'];
-            $role->display_name = $request['displayName'];
-            $role->save();
+            $permission = Permission::find($id);
+            if (!$permission) {
+                throw new \Exception('No permission found');
+            }
+            $permission->name = $request['name'];
+            $permission->display_name = $request['displayName'];
+            $permission->description = $request['description'];
+            $permission->save();
+
+            PermissionRole::where('permission_id', $permission->id)->update([
+                'permission_id' => $permission->id,
+                'role_id' => $role->id]);
 
             return response([
-                'data' => new RoleResource($role)
+                'data' => new PermissionResource($permission)
             ], StatusCodeEnum::HTTP_ACCEPTED);
         } catch (\Exception $e) {
             return response([
@@ -113,7 +137,6 @@ class RoleController extends Controller
         }
     }
 
-
     /**
      * Remove the specified resource from storage.
      *
@@ -123,11 +146,11 @@ class RoleController extends Controller
     public function destroy($id)
     {
         try {
-            $role =  Role::find($id);
-            if (!$role) {
-                throw new \Exception('No role found');
+            $permisssoin = Permission::find($id);
+            if (!$permisssoin) {
+                throw new \Exception('No permission found');
             }
-            $role->delete();
+            $permisssoin->delete();
             return response([
                 'data' => []
             ], StatusCodeEnum::HTTP_ACCEPTED);

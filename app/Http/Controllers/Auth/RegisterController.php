@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Auth;
+namespace App\Http\Controllers\Auth;
 
 use App\Enums\StatusCodeEnum;
 use App\Http\Controllers\Controller;
