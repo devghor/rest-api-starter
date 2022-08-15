@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Acl\Role;
 use App\Enums\StatusCodeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Role\RoleResource;
-use App\Models\Role;
+use App\Models\Acl\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 

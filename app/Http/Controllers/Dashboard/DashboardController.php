@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Enums\StatusCodeEnum;
 use App\Http\Controllers\Controller;
-use App\Models\Permission;
-use App\Models\Role;
+use App\Models\Acl\Permission;
+use App\Models\Acl\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 

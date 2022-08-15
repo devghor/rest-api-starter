@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Permission\PermissionCollection;
 use App\Http\Resources\Permission\PermissionResource;
 use App\Models\Acl\Permission;
+use App\Models\Acl\PermissionRole;
 use App\Models\Acl\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

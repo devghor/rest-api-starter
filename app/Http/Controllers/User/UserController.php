@@ -5,15 +5,12 @@ namespace App\Http\Controllers\User;
 use App\Enums\StatusCodeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\User\UserResource;
-use App\Models\Role;
+use App\Models\Acl\Role;
 use App\Models\User;
 use App\Services\User\UserService;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use PHPUnit\Exception;
 
 class UserController extends Controller
 {
