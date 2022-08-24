@@ -88,14 +88,14 @@ return [
     */
     'models' => [
 
-        'role' => \App\Models\Role::class,
+        'role' => \App\Models\Acl\Role::class,
 
-        'permission' => \App\Models\Permission::class,
+        'permission' => \App\Models\Acl\Permission::class,
 
         /**
          * Will be used only if the teams functionality is enabled.
          */
-        'team' => \App\Models\Team::class,
+        'team' => \App\Models\Acl\Team::class,
     ],
 
     /*
