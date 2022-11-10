@@ -1,12 +1,8 @@
-FROM php:7.4-fpm
+FROM php:8.0.5-fpm
 
 # Arguments defined in docker-compose.yml
 ARG user
 ARG uid
-
-
-RUN pecl install xdebug \
-    && docker-php-ext-enable xdebug
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
